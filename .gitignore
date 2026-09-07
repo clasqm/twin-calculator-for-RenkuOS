@@ -1,0 +1,11 @@
+# build directories
+debug/
+release/
+
+# qmake
+Makefile*
+.qmake.stash
+*.pro.user
+
+# ui files
+ui_*.h
