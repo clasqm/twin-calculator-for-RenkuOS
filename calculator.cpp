@@ -24,7 +24,7 @@ Calculator::~Calculator() {
 double Calculator::getInput()
 {
     bool ok;
-    double value = ui->labelExpression->text().toDouble(&ok);
+    double value = ui->labelInput->text().toDouble(&ok);
     if (!ok) qDebug() << "Conversion should never fail";
     return value;
 }
@@ -53,7 +53,7 @@ void Calculator::enterDigit(int d)
 
 void Calculator::enterUnaryOp(UnaryOp op)
 {
-    if (output == "") output = QString::number(lValue);
+    if (output.isEmpty()) output = QString::number(lValue);
     if (op != Neg && this->op != Eq) enterBinaryOp(Eq);
     switch (op) {
         case Neg:
@@ -136,15 +136,16 @@ void Calculator::clearInput()
 
 void Calculator::displayResult()
 {
-    ui->labelResult->setText((output == "" ? "0" : output) + " " + op);
+    ui->labelResult->setText((output.isEmpty() ? "0" : output) + " " + op);
 }
 
 void Calculator::displayInput()
 {
-    QString msg = input == "" ? "0" : input;
+    QString msg = input;
+    if (msg.isEmpty()) msg = "0";
     // lead with a zero
     if (msg.startsWith(".", Qt::CaseInsensitive)) msg = "0" + msg;
-    ui->labelExpression->setText(msg);
+    ui->labelInput->setText(msg);
 }
 
 void Calculator::displayError(Error err)
@@ -156,7 +157,7 @@ void Calculator::displayError(Error err)
         case NegSqrt: msg = "Negative sqrt"; break;
         case DivBy0: msg = "Division by 0"; break;
     };
-    ui->labelExpression->setText(msg);
+    ui->labelInput->setText(msg);
     enableButtons(false);
 }
 
@@ -280,7 +281,7 @@ void Calculator::on_buttonDigit9_clicked()
 
 void Calculator::on_buttonDigit0_clicked()
 {
-    if (input == "") return;
+    if (input.isEmpty()) return;
     if (input.startsWith("0", Qt::CaseInsensitive)) return;
     enterDigit(0);
 }

@@ -74,7 +74,7 @@ QLabel#labelResult {
 	font-size: 18px;
 }
 
-QLabel#labelExpression {
+QLabel#labelInput {
 	font-size: 40px;
 	font-weight: 800;
 }
@@ -156,7 +156,7 @@ QPushButton#buttonOpEq:!enabled {
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QScrollArea" name="scrollAreaExpression">
+      <widget class="QScrollArea" name="scrollAreaResult">
        <property name="layoutDirection">
         <enum>Qt::RightToLeft</enum>
        </property>
@@ -172,7 +172,7 @@ QPushButton#buttonOpEq:!enabled {
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
-       <widget class="QWidget" name="contentExpression">
+       <widget class="QWidget" name="contentResult">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -211,7 +211,7 @@ QPushButton#buttonOpEq:!enabled {
       </widget>
      </item>
      <item>
-      <widget class="QScrollArea" name="scrollAreaResult">
+      <widget class="QScrollArea" name="scrollAreaInput">
        <property name="layoutDirection">
         <enum>Qt::RightToLeft</enum>
        </property>
@@ -227,7 +227,7 @@ QPushButton#buttonOpEq:!enabled {
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
-       <widget class="QWidget" name="contentResult">
+       <widget class="QWidget" name="contentInput">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -238,7 +238,7 @@ QPushButton#buttonOpEq:!enabled {
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QLabel" name="labelExpression">
+          <widget class="QLabel" name="labelInput">
            <property name="layoutDirection">
             <enum>Qt::RightToLeft</enum>
            </property>

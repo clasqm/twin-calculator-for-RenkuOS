@@ -38,7 +38,7 @@ public:
 
     double getInput();
 
-    void setInput(QString value);
+    void setInput(QString);
 
     inline void setInput(double value) { setInput(QString::number(value)); }
 
@@ -49,13 +49,13 @@ public:
     void clearAll();
 
 private:
-    void enterInput(QString in);
+    void enterInput(QString);
 
-    void enterDigit(int d);
+    void enterDigit(int);
 
-    void enterUnaryOp(UnaryOp op);
+    void enterUnaryOp(UnaryOp);
 
-    void enterBinaryOp(BinaryOp op);
+    void enterBinaryOp(BinaryOp);
 
     void performCalculation();
 
@@ -63,11 +63,11 @@ private:
 
     void displayResult();
 
-    void displayError(Error err);
+    void displayError(Error);
 
     void clearInput();
 
-    void enableButtons(bool enabled);
+    void enableButtons(bool);
 
 private slots:
     void on_buttonDigit1_clicked();
