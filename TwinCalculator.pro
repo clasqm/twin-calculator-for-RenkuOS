@@ -34,3 +34,6 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     icon.qrc
+
+DISTFILES += \
+    TODO.md

@@ -1,0 +1,2 @@
+- [ ] Add shortcuts
+- [ ] Fix negation only negating lValue and not the input

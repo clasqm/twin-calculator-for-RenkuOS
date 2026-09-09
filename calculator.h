@@ -42,7 +42,9 @@ public:
 
     inline void setInput(double value) { setInput(QString::number(value)); }
 
-    inline void updateInput(double value) { setInput(value); lValue = value; }
+    void updateInput(double value);
+
+    void shortcutPrefix(QString seq);
 
     bool hasError();
 

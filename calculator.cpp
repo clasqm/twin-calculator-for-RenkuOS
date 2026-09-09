@@ -2,6 +2,7 @@
 #include "ui_calculator.h"
 
 #include <QString>
+#include <QKeySequence>
 #include <QDebug>
 #include <cmath>
 
@@ -25,25 +26,61 @@ double Calculator::getInput()
 {
     bool ok;
     double value = ui->labelInput->text().toDouble(&ok);
-    if (!ok) qDebug() << "Conversion should never fail";
+    if (!ok) qFatal("Conversion should never fail");
     return value;
 }
 
 void Calculator::setInput(QString value)
 {
-    input = value == "0" ? "" : value;
+    while (value.startsWith("0")) value.remove(0, 1);
+    if (value.isEmpty()) value = "0";
+    // lead with a zero
+    if (value.startsWith(".", Qt::CaseInsensitive)) value = "0" + value;
+    input = value;
     displayInput();
+}
+
+void Calculator::updateInput(double value)
+{
+    if (op == Eq) {
+        clearAll();
+        lValue = value;
+    } else rValue = value;
+    setInput(value);
 }
 
 void Calculator::enterInput(QString in)
 {
-    // if (input.length() > 12) return;
     setInput(input + in);
     if (op == Eq) {
         prev = Eq;
         lValue = getInput();
         ui->labelResult->setText("");
     }
+}
+
+void Calculator::shortcutPrefix(QString seq)
+{
+    for (auto button : {
+         ui->buttonOpDot,
+         ui->buttonDigit0,
+         ui->buttonDigit1,
+         ui->buttonDigit2,
+         ui->buttonDigit3,
+         ui->buttonDigit4,
+         ui->buttonDigit5,
+         ui->buttonDigit6,
+         ui->buttonDigit7,
+         ui->buttonDigit8,
+         ui->buttonDigit9,
+         ui->buttonOpEq,
+         ui->buttonOpAdd,
+         ui->buttonOpSub,
+         ui->buttonOpMul,
+         ui->buttonOpDiv,
+         ui->buttonOpMod,
+         ui->buttonOpDel,
+    }) button->setShortcut(QKeySequence::fromString(seq + QString('+') + button->shortcut().toString()));
 }
 
 void Calculator::enterDigit(int d)
@@ -54,27 +91,37 @@ void Calculator::enterDigit(int d)
 void Calculator::enterUnaryOp(UnaryOp op)
 {
     if (output.isEmpty()) output = QString::number(lValue);
-    if (op != Neg && this->op != Eq) enterBinaryOp(Eq);
+    if (op != Neg && this->op != Eq) {
+        enterBinaryOp(Eq);
+        prev = Eq;
+    }
+
     switch (op) {
-        case Neg:
-            lValue = -lValue; break;
-        case Inv:
-            if (lValue == 0.0) {
-                displayError(DivBy0);
-                return;
-            }
-            output = "1 / (" + output + ")";
-            lValue = 1.0 / lValue; break;
-        case Square:
-            output = "sqr(" + output + ")";
-            lValue *= lValue; break;
-        case Sqrt:
-            if (lValue < 0) {
-                displayError(NegSqrt);
-                return;
-            }
-            output = "sqrt(" + output + ")";
-            lValue = sqrt(lValue); break;
+    case Neg:
+        if (this->op != Eq) {
+            setInput(-getInput());
+            return;
+        }
+        lValue = -lValue;
+        output = "-(" + output + ")";
+        break;
+    case Inv:
+        if (lValue == 0.0) {
+            displayError(DivBy0);
+            return;
+        }
+        output = "1 / (" + output + ")";
+        lValue = 1.0 / lValue; break;
+    case Square:
+        output = "sqr(" + output + ")";
+        lValue *= lValue; break;
+    case Sqrt:
+        if (lValue < 0) {
+            displayError(NegSqrt);
+            return;
+        }
+        output = "sqrt(" + output + ")";
+        lValue = sqrt(lValue); break;
     }
 
     setInput(lValue);
@@ -91,7 +138,7 @@ void Calculator::enterBinaryOp(BinaryOp op)
             performCalculation();
             output = QString::number(lValue);
         }
-        else this->op = op;
+        this->op = op;
         displayResult();
         return;
     }
@@ -110,22 +157,22 @@ void Calculator::enterBinaryOp(BinaryOp op)
 void Calculator::performCalculation()
 {
     switch (prev) {
-        case Eq:
+    case Eq:
+        return;
+    case Add:
+        lValue += rValue; break;
+    case Sub:
+        lValue -= rValue; break;
+    case Mul:
+        lValue *= rValue; break;
+    case Div:
+        if (rValue == 0.0) {
+            displayError(DivBy0);
             return;
-        case Add:
-            lValue += rValue; break;
-        case Sub:
-            lValue -= rValue; break;
-        case Mul:
-            lValue *= rValue; break;
-        case Div:
-            if (rValue == 0.0) {
-                displayError(DivBy0);
-                return;
-            }
-            lValue /= rValue; break;
-        case Mod:
-            lValue = fmod(lValue, rValue); break;
+        }
+        lValue /= rValue; break;
+    case Mod:
+        lValue = fmod(lValue, rValue); break;
     }
 }
 
@@ -136,16 +183,14 @@ void Calculator::clearInput()
 
 void Calculator::displayResult()
 {
+    if (hasError()) return;
     ui->labelResult->setText((output.isEmpty() ? "0" : output) + " " + op);
 }
 
 void Calculator::displayInput()
 {
-    QString msg = input;
-    if (msg.isEmpty()) msg = "0";
-    // lead with a zero
-    if (msg.startsWith(".", Qt::CaseInsensitive)) msg = "0" + msg;
-    ui->labelInput->setText(msg);
+    if (hasError()) return;
+    ui->labelInput->setText(input.isEmpty() ? "0" : input);
 }
 
 void Calculator::displayError(Error err)
@@ -153,10 +198,11 @@ void Calculator::displayError(Error err)
     this->err = err;
     QString msg;
     switch (err) {
-        case None: return;
-        case NegSqrt: msg = "Negative sqrt"; break;
-        case DivBy0: msg = "Division by 0"; break;
+    case None: return;
+    case NegSqrt: msg = "Negative sqrt"; break;
+    case DivBy0: msg = "Division by 0"; break;
     };
+    qDebug() << msg;
     ui->labelInput->setText(msg);
     enableButtons(false);
 }
@@ -185,6 +231,7 @@ void Calculator::enableButtons(bool enabled)
          ui->buttonOpInv,
          ui->buttonOpSquare,
          ui->buttonOpSqrt,
+         ui->buttonOpDel
     }) {
         button->setEnabled(enabled);
     }
@@ -208,7 +255,6 @@ void Calculator::clearAll()
 
 void Calculator::on_buttonOpDel_clicked()
 {
-    if (hasError()) return;
     input.remove(input.length() - 1, 1);
     if (input.endsWith("."))
         input.remove(input.length() - 1, 1);
@@ -217,8 +263,8 @@ void Calculator::on_buttonOpDel_clicked()
 
 void Calculator::on_buttonOpDot_clicked()
 {
-   if (input.contains(".", Qt::CaseInsensitive)) return;
-   enterInput(".");
+    if (input.contains(".", Qt::CaseInsensitive)) return;
+    enterInput(".");
 }
 
 void Calculator::on_buttonOpC_clicked()
@@ -281,8 +327,7 @@ void Calculator::on_buttonDigit9_clicked()
 
 void Calculator::on_buttonDigit0_clicked()
 {
-    if (input.isEmpty()) return;
-    if (input.startsWith("0", Qt::CaseInsensitive)) return;
+    if (input.startsWith("0", Qt::CaseInsensitive) && !input.contains('.')) return;
     enterDigit(0);
 }
 
