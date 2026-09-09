@@ -62,12 +62,13 @@ QPushButton#buttonR2L:hover {
         <height>0</height>
        </size>
       </property>
-      <zorder></zorder>
-      <zorder>buttonR2L</zorder>
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
@@ -77,12 +78,12 @@ QPushButton#buttonR2L:hover {
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <property name="labelAlignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
         </property>
         <property name="formAlignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
         </property>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QPushButton" name="buttonL2R">
           <property name="text">
            <string/>
@@ -99,7 +100,7 @@ QPushButton#buttonR2L:hover {
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QPushButton" name="buttonR2L">
           <property name="text">
            <string/>
@@ -116,12 +117,25 @@ QPushButton#buttonR2L:hover {
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QPushButton" name="buttonClear">
           <property name="text">
            <string>C</string>
           </property>
          </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>75</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
