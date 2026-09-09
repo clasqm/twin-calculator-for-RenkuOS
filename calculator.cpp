@@ -139,6 +139,7 @@ void Calculator::enterBinaryOp(BinaryOp op)
             output = QString::number(lValue);
         }
         this->op = op;
+        prev = op;
         displayResult();
         return;
     }
