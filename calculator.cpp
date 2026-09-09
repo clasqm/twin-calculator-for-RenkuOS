@@ -25,7 +25,12 @@ Calculator::~Calculator() {
 double Calculator::getInput()
 {
     bool ok;
-    double value = ui->labelInput->text().toDouble(&ok);
+    QString msg = ui->labelInput->text();
+    int i;
+    while ((i = msg.indexOf(",")) >= 0) {
+        msg.remove(i, 1);
+    }
+    double value = msg.toDouble(&ok);
     if (!ok) qFatal("Conversion should never fail");
     return value;
 }
@@ -173,6 +178,10 @@ void Calculator::performCalculation()
         }
         lValue /= rValue; break;
     case Mod:
+        if (rValue == 0.0) {
+            displayError(DivBy0);
+            return;
+        }
         lValue = fmod(lValue, rValue); break;
     }
 }
@@ -191,7 +200,12 @@ void Calculator::displayResult()
 void Calculator::displayInput()
 {
     if (hasError()) return;
-    ui->labelInput->setText(input.isEmpty() ? "0" : input);
+    QString msg = input.isEmpty() ? "0" : input;
+    int i = msg.contains('.') ? msg.indexOf('.') : msg.length();
+    while (i > 3) {
+        msg.insert(i -= 3, ',');
+    }
+    ui->labelInput->setText(msg);
 }
 
 void Calculator::displayError(Error err)
